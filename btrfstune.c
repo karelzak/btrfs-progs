@@ -30,7 +30,6 @@
 #include "disk-io.h"
 #include "transaction.h"
 #include "utils.h"
-#include "version.h"
 
 static char *device;
 

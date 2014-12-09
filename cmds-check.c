@@ -33,7 +33,6 @@
 #include "disk-io.h"
 #include "print-tree.h"
 #include "transaction.h"
-#include "version.h"
 #include "utils.h"
 #include "commands.h"
 #include "free-space-cache.h"
@@ -8735,7 +8734,7 @@ out:
 	printf("file data blocks allocated: %llu\n referenced %llu\n",
 		(unsigned long long)data_bytes_allocated,
 		(unsigned long long)data_bytes_referenced);
-	printf("%s\n", BTRFS_BUILD_VERSION);
+	printf("%s\n", PACKAGE_STRING);
 
 	free_root_recs_tree(&root_cache);
 close_out:

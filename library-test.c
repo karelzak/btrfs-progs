@@ -17,7 +17,6 @@
  */
 
 #include "kerncompat.h"
-#include "version.h"
 #include "send-stream.h"
 
 /*

@@ -33,7 +33,6 @@
 #include "disk-io.h"
 #include "transaction.h"
 #include "utils.h"
-#include "version.h"
 #include "volumes.h"
 #include "extent_io.h"
 
