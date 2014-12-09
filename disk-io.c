@@ -18,7 +18,7 @@
 
 #define _XOPEN_SOURCE 600
 #define __USE_XOPEN2K
-#define _GNU_SOURCE 1
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>

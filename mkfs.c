@@ -17,7 +17,6 @@
  */
 
 #define _XOPEN_SOURCE 500
-#define _GNU_SOURCE
 
 #include "kerncompat.h"
 
