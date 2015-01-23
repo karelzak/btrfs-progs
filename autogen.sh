@@ -33,11 +33,23 @@ test -f btrfs.c || {
 	echo
 	DIE=1
 }
-
+(libtoolize --version) < /dev/null > /dev/null 2>&1 || {
+	echo
+	echo "You must have libtool-2 installed to generate btrfs-progs build system."
+	echo
+	DIE=1
+}
 (automake --version) < /dev/null > /dev/null 2>&1 || {
 	echo
 	echo "You must have automake installed to generate btrfs-progs build system."
 	echo 
+	DIE=1
+}
+
+ltver=$(libtoolize --version | awk '/^libtoolize/ { print $4 }')
+ltver=${ltver:-"none"}
+test ${ltver##2.} = "$ltver" && {
+	echo "You must have libtool version >= 2.x.x, but you have $ltver."
 	DIE=1
 }
 
@@ -51,21 +63,18 @@ echo "   aclocal:    $(aclocal --version | head -1)"
 echo "   autoconf:   $(autoconf --version | head -1)"
 echo "   autoheader: $(autoheader --version | head -1)"
 echo "   automake:   $(automake --version | head -1)"
+echo "   libtoolize: $(libtoolize --version | head -1)"
 
 chmod +x version.sh
 rm -rf autom4te.cache
+mkdir -p m4
 
-aclocal $AL_OPTS
+libtoolize --force $LT_OPTS
+aclocal -I m4 $AL_OPTS
 autoconf $AC_OPTS
 autoheader $AH_OPTS
 
-# it's better to use helper files from automake installation than
-# maintain copies in git tree
-HELPER_DIR=$(automake --print-libdir)
-mkdir -p config/
-cp $HELPER_DIR/config.guess config/
-cp $HELPER_DIR/config.sub config/
-cp $HELPER_DIR/install-sh config/
+automake --add-missing $AM_OPTS
 
 cd $THEDIR
 

@@ -1,21 +1,30 @@
+#
+# Copyright (C) 2015 Karel Zak <kzak@redhat.com> 
+#
 AC_INIT([btrfs-progs],
 	m4_esyscmd([./version.sh --configure]),
 	[linux-btrfs@vger.kernel.org],,
 	[http://btrfs.wiki.kernel.org])
 
-dnl library version
+dnl library version and soname
 LIBBTRFS_MAJOR=0
 LIBBTRFS_MINOR=1
 LIBBTRFS_PATCHLEVEL=1
+LIBBTRFS_VERSION_INFO=`expr $LIBBTRFS_MAJOR + $LIBBTRFS_MINOR`:$LIBBTRFS_PATCHLEVEL:$LIBBLKID_MINOR
 
 CFLAGS="-g -O1"
 
 AC_PREREQ([2.60])
 
 AC_CONFIG_AUX_DIR([config])
+AC_CONFIG_MACRO_DIR([m4])
 dnl AC_USE_SYSTEM_EXTENSIONS must be called before any macros that run
 dnl the compiler (like AC_PROG_LIBTOOL) to avoid autoconf errors.
 AC_USE_SYSTEM_EXTENSIONS
+AM_INIT_AUTOMAKE([-Wall foreign 1.10 tar-pax dist-bzip2 no-dist-gzip dist-xz -Wno-portability subdir-objects])
+
+m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])],
+			    [AC_SUBST([AM_DEFAULT_VERBOSITY], [1])])
 
 AC_CONFIG_SRCDIR([btrfs.c])
 AC_PREFIX_DEFAULT([/usr])
@@ -31,6 +40,9 @@ AC_SYS_LARGEFILE
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PATH_PROG([AR], [ar])
+
+dnl libtool-2
+LT_INIT
 
 AC_CHECK_FUNCS([openat], [],
 	[AC_MSG_ERROR([cannot find openat() function])])
@@ -68,11 +80,31 @@ AS_IF([test "x$enable_backtrace" = xno], [
 
 
 AC_ARG_ENABLE([documentation],
-	      AS_HELP_STRING([--disable-documentation], [do not build domumentation]),
+  AS_HELP_STRING([--disable-documentation], [do not build domumentation]),
   [], [enable_documentation=yes]
 )
-AS_IF([test "x$enable_documentation" = xyes], [DISABLE_DOCUMENTATION=0], [DISABLE_DOCUMENTATION=1])
-AC_SUBST([DISABLE_DOCUMENTATION])
+AM_CONDITIONAL([BUILD_DOCUMENTATION], [test "x$enable_documentation" = xyes])
+
+
+# Note that libtool option --enable-static is to control static libs
+AC_ARG_ENABLE([static-programs],
+  AS_HELP_STRING([--enable-static-programs], [link static the programs]),
+  [], [enable_static_programs=no]
+)
+AM_CONDITIONAL([BUILD_STATIC], [test "x$enable_static" = xyes -a "x$enable_static_programs" = xyes])
+
+
+dnl btrfs-fragments is disabled by default to avoid dependence on gdlib
+AC_ARG_ENABLE([btrfs-fragments],
+  AS_HELP_STRING([--enable-btrfs-fragments], [build btrfs-fragments program]),
+  [], [enable_btrfs_fragments=no]
+)
+AS_IF([test "x$enable_btrfs_fragments" = xno], [
+  AM_CONDITIONAL([BUILD_BTRFS_FRAGMENTS], [false])
+], [
+  PKG_CHECK_MODULES(GDLIB, [gdlib])
+  AM_CONDITIONAL([BUILD_BTRFS_FRAGMENTS], [true])
+])
 
 
 dnl Define <NAME>_LIBS= and <NAME>_CFLAGS= by pkg-config
@@ -88,6 +120,12 @@ PKG_STATIC(UUID_LIBS_STATIC, [uuid])
 
 PKG_CHECK_MODULES(ZLIB, [zlib])
 PKG_STATIC(ZLIB_LIBS_STATIC, [zlib])
+
+PKG_CHECK_MODULES(EXT2FS, [ext2fs])
+PKG_STATIC(EXT2FS_LIBS_STATIC, [ext2fs])
+
+PKG_CHECK_MODULES(COM_ERR, [com_err])
+PKG_STATIC(COM_ERR_LIBS_STATIC, [com_err])
 
 dnl lzo library does not provide pkg-config, let use classic way
 AC_CHECK_LIB([lzo2], [lzo_version], [
@@ -105,6 +143,7 @@ dnl library stuff
 AC_SUBST([LIBBTRFS_MAJOR])
 AC_SUBST([LIBBTRFS_MINOR])
 AC_SUBST([LIBBTRFS_PATCHLEVEL])
+AC_SUBST([LIBBTRFS_VERSION_INFO])
 
 AC_CONFIG_HEADERS([config.h])
 

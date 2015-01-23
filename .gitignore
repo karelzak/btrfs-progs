@@ -1,4 +1,7 @@
+*~
 *.o
+*.lo
+*.la
 *.static.o
 *.o.d
 tags
@@ -40,7 +43,11 @@ libbtrfs.so.0.1
 library-test
 library-test-static
 
+.deps/
+.libs/
 
+Makefile
+Makefile.in
 aclocal.m4
 autom4te.cache
 compile
