@@ -7,10 +7,26 @@ if test "x$PACKAGE_URL" = "x"; then
 	AC_DEFINE([PACKAGE_URL], ["http://btrfs.wiki.kernel.org"], [URL])
 fi
 
-dnl library version
+dnl version details from <major>.<minor>[-<suffix>]
+PACKAGE_NUMBER=$(echo $PACKAGE_VERSION | sed 's/v//g')
+PACKAGE_VERSION_MAJOR=$(echo $PACKAGE_NUMBER | awk -F. '{print $1}')
+PACKAGE_VERSION_MINOR=$(echo $PACKAGE_NUMBER | awk -F. '{print $2}' \
+					     | awk -F- '{print $1}')
+PACKAGE_VERSION_PATCH=0
+
+
+dnl old library version
 LIBBTRFS_MAJOR=0
 LIBBTRFS_MINOR=1
 LIBBTRFS_PATCHLEVEL=1
+
+dnl libbtrfs version (!= soname)
+LIBBTRFS_VERSION="$PACKAGE_VERSION_MAJOR.$PACKAGE_VERSION_MINOR.$PACKAGE_VERSION_PATCH"
+AC_SUBST([LIBBTRFS_VERSION])
+AC_SUBST([LIBBTRFS_MAJOR_VERSION], $PACKAGE_VERSION_MAJOR)
+AC_SUBST([LIBBTRFS_MINOR_VERSION], $PACKAGE_VERSION_MINOR)
+AC_SUBST([LIBBTRFS_PATCH_VERSION], $PACKAGE_VERSION_PATCH)
+
 
 CFLAGS=${CFLAGS:-"-g -O1 -Wall -D_FORTIFY_SOURCE=2"}
 AC_SUBST([CFLAGS])
@@ -147,6 +163,8 @@ AC_CONFIG_FILES([
 Makefile
 Documentation/Makefile
 version.h
+libbtrfs/libbtrfs.h
+libbtrfs/Makefile
 ])
 
 AC_OUTPUT

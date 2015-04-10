@@ -1,0 +1,12 @@
+/*
+ * symbols since btrfs-progs 3.20
+ *
+ * Copyright (C) 2015 Karel Zak <kzak@redhat.com>
+ */
+BTRFS_3.20 {
+global:
+	btrfs_get_library_version;
+	btrfs_parse_version_string;
+local:
+	*;
+};

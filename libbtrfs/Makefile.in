@@ -1,0 +1,41 @@
+
+CFLAGS = @CFLAGS@ \
+	 -include ../config.h \
+	 -I. \
+	 -fPIC
+
+LDFLAGS += -L.
+
+lib_name = libbtrfs
+lib_shared = $(lib_name).so.0.1
+lib_soname = $(lib_name).so.0
+lib_symbols = $(lib_name).sym
+
+lib_headers_public = $(lib_name).h
+lib_headers_private = btrfsP.h
+
+lib_objects = version.o
+
+all: $(lib_shared) lib_links
+
+clean:
+	$(Q)$(RM) -f $(lib_objects) test test.o $(lib_shared)
+
+$(lib_shared): $(lib_objects) $(lib_headers_public) $(lib_headers_private)
+	@echo "    [LD]     $@"
+	$(Q)$(CC) $(CFLAGS) $(lib_objects) $(LDFLAGS) $(LIBBTRFS_LIBS) \
+		-shared -Wl,-soname,$(lib_soame) -o $(lib_shared) \
+		-Wl,--version-script=$(lib_symbols)
+
+lib_links: 
+	@echo "    [LN]     $@"
+	$(Q)$(LN_S) -f $(lib_shared) $(lib_soname)
+	$(Q)$(LN_S) -f $(lib_shared) $(lib_name).so
+
+test: test.o
+	$(Q)$(CC) $(CFLAGS) test.o -o test $(LDFLAGS) -lbtrfs
+
+
+.c.o:
+	@echo "    [CC]     $@"
+	$(Q)$(CC) $(CFLAGS) -c $<

@@ -91,7 +91,7 @@ endif
 btrfs_convert_libs = @EXT2FS_LIBS@ @COM_ERR_LIBS@
 btrfs_fragments_libs = -lgd -lpng -ljpeg -lfreetype
 
-SUBDIRS =
+SUBDIRS = libbtrfs
 BUILDDIRS = $(patsubst %,build-%,$(SUBDIRS))
 INSTALLDIRS = $(patsubst %,install-%,$(SUBDIRS))
 CLEANDIRS = $(patsubst %,clean-%,$(SUBDIRS))
