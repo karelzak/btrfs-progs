@@ -1,3 +1,4 @@
+*~
 *.o
 *.static.o
 *.o.d
@@ -69,3 +70,4 @@ stamp-h.in
 stamp-h1
 config/*
 
+libbtrfs/libbtrfs.h

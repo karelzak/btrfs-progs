@@ -30,8 +30,18 @@ extern "C" {
 #define LIBBTRFS_MINOR_VERSION   @LIBBTRFS_MINOR_VERSION@
 #define LIBBTRFS_PATCH_VERSION   @LIBBTRFS_PATCH_VERSION@
 
+/* version.c */
 int btrfs_parse_version_string(const char *ver_string);
 int btrfs_get_library_version(const char **ver_string);
+
+/* fs.c */
+struct libbtrfs_fs *btrfs_new_fs(void);
+void btrfs_ref_fs(struct libbtrfs_fs *fs);
+void btrfs_unref_fs(struct libbtrfs_fs *fs);
+
+int btrfs_fs_get_fd(struct libbtrfs_fs *fs);
+const char *btrfs_fs_get_path(struct libbtrfs_fs *fs);
+int btrfs_fs_set_path(struct libbtrfs_fs *fs, const char *path);
 
 #ifdef __cplusplus
 }

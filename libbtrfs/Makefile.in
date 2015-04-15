@@ -1,7 +1,9 @@
 
 CFLAGS = @CFLAGS@ \
 	 -include ../config.h \
+	 -DBTRFS_FLAT_INCLUDES \
 	 -I. \
+	 -I..\
 	 -fPIC
 
 LDFLAGS += -L.
@@ -14,7 +16,8 @@ lib_symbols = $(lib_name).sym
 lib_headers_public = $(lib_name).h
 lib_headers_private = btrfsP.h
 
-lib_objects = version.o
+lib_objects = fs.o \
+	      version.o
 
 all: $(lib_shared) lib_links
 
@@ -23,7 +26,7 @@ clean:
 
 $(lib_shared): $(lib_objects) $(lib_headers_public) $(lib_headers_private)
 	@echo "    [LD]     $@"
-	$(Q)$(CC) $(CFLAGS) $(lib_objects) $(LDFLAGS) $(LIBBTRFS_LIBS) \
+	$(Q)$(CC) $(CFLAGS) $(lib_objects) ../libbtrfs.a $(LDFLAGS) $(LIBBTRFS_LIBS) \
 		-shared -Wl,-soname,$(lib_soame) -o $(lib_shared) \
 		-Wl,--version-script=$(lib_symbols)
 
@@ -34,7 +37,6 @@ lib_links:
 
 test: test.o
 	$(Q)$(CC) $(CFLAGS) test.o -o test $(LDFLAGS) -lbtrfs
-
 
 .c.o:
 	@echo "    [CC]     $@"

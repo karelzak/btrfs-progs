@@ -7,6 +7,14 @@ BTRFS_3.20 {
 global:
 	btrfs_get_library_version;
 	btrfs_parse_version_string;
+
+	btrfs_new_fs;
+	btrfs_ref_fs;
+	btrfs_unref_fs;
+	 
+	btrfs_fs_get_fd;
+	btrfs_fs_get_path;
+	btrfs_fs_set_path;
 local:
 	*;
 };
